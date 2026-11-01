@@ -1,35 +1,45 @@
-;Ekta 8-bit number er bhitor koyta '1' (one bit) ache ta count korte hobe shift/rotate use kore.
-;Sample Input: 5AH (Binary te: 0101 1010).
-;Sample Output: 4.
-
-
 .MODEL SMALL
+.STACK 100H
+
 .DATA
-    NUM DB 5AH         ; Number: 0101 1010
-    ONES_COUNT DB 0    ; Koyta 1 pabo tar count
+    NUM DB 5AH
+    ONES_COUNT DB 0
+    MSG DB 'Number of 1 bits = $'
 
 .CODE
 MAIN PROC
     MOV AX, @DATA
     MOV DS, AX
 
-    MOV AL, NUM        ; Number ta AL e nilam
-    MOV CX, 8          ; 8-bit number, tai loop 8 bar ghurbe
-    MOV BL, 0          ; Count korar jonno BL ke 0 kore nilam
+    MOV AL, NUM
+    MOV CX, 8
+    MOV BL, 0
 
 COUNT_LOOP:
-    SHR AL, 1          ; AL ke 1 bit dan dike shift korlam. Last bit CF (Carry Flag) e chole jabe
-    JNC SKIP_INC       ; Jump if No Carry (Jodi CF=0 hoy, tahole increment korar dorkar nai)
+    SHR AL, 1
+    JNC SKIP_INC
 
-    ; Jodi CF=1 hoy tahole count barabo
-    INC BL             ; BL = BL + 1
+    INC BL
 
 SKIP_INC:
-    LOOP COUNT_LOOP    ; CX theke 1 komabe ar upore jabe
+    LOOP COUNT_LOOP
 
-    MOV ONES_COUNT, BL ; Pura 8 bit check sheshe count ta memory te save korlam
+    MOV ONES_COUNT, BL
 
+    ; Display message
+    LEA DX, MSG
+    MOV AH, 9
+    INT 21H
+
+    ; Print number of 1 bits
+    MOV DL, ONES_COUNT
+    ADD DL, 30H
+    MOV AH, 2
+    INT 21H
+
+    ; Exit
     MOV AH, 4CH
     INT 21H
+
 MAIN ENDP
 END MAIN
